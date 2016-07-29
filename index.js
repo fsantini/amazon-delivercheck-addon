@@ -1,15 +1,20 @@
 var self = require("sdk/self");
-
-// a dummy function, to show how tests work.
-// to see how to test this function, look at test/test-index.js
-function dummy(text, callback) {
-  callback(text);
-}
-
-exports.dummy = dummy;
-
 var buttons = require('sdk/ui/button/action');
 var tabs = require("sdk/tabs");
+
+
+// pageMod at the moment not working because of ajax: page is not actually reloaded
+//var pageMod = require("sdk/page-mod");
+//
+//pageMod.PageMod({
+//  include: [/.*amazon\.[^/]*\/s\/.*/, /.*amazon\.*\/search\/.*/],
+//  contentScriptWhen: 'ready',
+//  attachTo: 'top',
+//  contentScript: 'console.log("Page matches");',
+//  contentScriptFile: [self.data.url('jquery-3.1.0.min.js'),
+//                        self.data.url('scanResults.js')]
+//});
+
 
 var button = buttons.ActionButton({
   id: "amazon-result-scan",

@@ -1,3 +1,25 @@
+var SHIPMENT_STATUS = {
+  UNDEFINED: 'UNDEFINED',
+  YES: 'OK',
+  NO: 'NO'
+}
+
+function setShipInfo($objDiv, status)
+{
+  switch(status)
+  {
+    case SHIPMENT_STATUS.YES:
+      $objDiv.css("border", "2px solid green");
+      break;
+    case SHIPMENT_STATUS.NO:
+      $objDiv.css("border", "2px solid red");
+      break;
+    case SHIPMENT_STATUS.UNDEFINED:
+    default:
+      $objDiv.css("border", "2px solid yellow");
+  }
+}
+
 
 $("div.s-item-container").each(function(i) {
   var $thisObject = $(this);
@@ -11,7 +33,7 @@ $("div.s-item-container").each(function(i) {
   }
   
   
-  $thisObject.css("border", "2px solid yellow");
+  setShipInfo($thisObject, SHIPMENT_STATUS.UNDEFINED);
     
   $.get(lnk, function(data) {
       
@@ -22,11 +44,11 @@ $("div.s-item-container").each(function(i) {
         if ($(deliveryInfo).text().indexOf("does not ship") > -1)
         {
             //console.log("No delivery");
-            $thisObject.css("border", "2px solid red");
+            setShipInfo($thisObject, SHIPMENT_STATUS.NO);
         } else if ($(deliveryInfo).text().indexOf("ships to") > -1)
         {
             //console.log("Delivery ok");
-            $thisObject.css("border", "2px solid green");
+            setShipInfo($thisObject, SHIPMENT_STATUS.YES);
         }
       } else
       {
@@ -38,17 +60,16 @@ $("div.s-item-container").each(function(i) {
         else
         {
             var noDelivery = $(deliveryInfo).find(".a-color-error");
-            console.log(noDelivery);
             if (noDelivery.length > 0)
             {
                 //console.log("No delivery");
-                $thisObject.css("border", "2px solid red");
+               setShipInfo($thisObject, SHIPMENT_STATUS.NO);
                 
             }
             else
             {
                 //console.log("Delivery ok");
-                $thisObject.css("border", "2px solid green");
+                setShipInfo($thisObject, SHIPMENT_STATUS.YES);
             }
         }
       }
