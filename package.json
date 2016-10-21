@@ -1,7 +1,7 @@
 {
   "title": "Amazon delivery check Addon",
   "name": "amazon-delivercheck-addon",
-  "version": "0.0.6",
+  "version": "0.0.10",
   "description": "This addon checks if Amazon delivers to your country, from the search page",
   "main": "index.js",
   "author": "Francesco Santini <francesco.santini@gmail.com>",
@@ -24,6 +24,14 @@
       "description": "Run the addon automatically on amazon search pages",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "blackAndWhite",
+      "title": "Use B&W pattern",
+      "description": "Use a black-and-white pattern instead of colors. Solid border = available, dashed = unknown, dotted = unavailable",
+      "type": "bool",
+      "value": false
     }
+    
   ] 
 }

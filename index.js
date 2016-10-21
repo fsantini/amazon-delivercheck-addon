@@ -6,28 +6,32 @@ var pref = require("sdk/simple-prefs");
 
 // pageMod at the moment not working because of ajax: page is not actually reloaded
 var pageMod = require("sdk/page-mod");
+var worker = null
 
 function initPageMod()
 {
   return pageMod.PageMod({
-    include: [/.*amazon\.[^/]*\/s\/.*/, /.*amazon\.*\/search\/.*/],
+    include: [/.*amazon\.[^/]*\/s\/.*/, /.*amazon\.*\/search\/.*/, /.*amazon\.[^/]*\/gp\/aw\/s\/.*/ ],
     contentScriptWhen: 'ready',
     attachTo: ['top', 'existing'],
     contentScript: 'console.log("Page matches");',
     contentScriptFile: [self.data.url('jquery-3.1.0.min.js'),
-                          self.data.url('scanResults.js')]
+                          self.data.url('scanResults.js')],
+    onAttach: function(w) { worker = w; setBnW(); }
   });
 }
 
 var pmod = null;
 
-
-
+/*
 var windows = require("sdk/window/utils");
 var window = windows.getMostRecentBrowserWindow();
-
 var ua = window.navigator.userAgent.toLowerCase();
 var isAndroid = ua.indexOf("android") > -1;
+*/
+
+// at the moment, Android support is disabled
+var isAndroid = false;
 
 function autoRunChanged()
 {
@@ -48,6 +52,16 @@ if (pref.prefs.autoRun || isAndroid)
 // listen when the autoRun property is set
 pref.on("autoRun", autoRunChanged);
 
+
+// handle the BnW preference setting
+function setBnW()
+{
+    if (worker)
+      worker.port.emit("BlackAndWhite", pref.prefs.blackAndWhite);
+}
+
+pref.on("blackAndWhite", setBnW );
+
 var button = buttons.ActionButton({
   id: "amazon-result-scan",
   label: "See which products can be delivered",
@@ -60,8 +74,9 @@ var button = buttons.ActionButton({
 });
 
 function handleClick(state) {
-  var worker = tabs.activeTab.attach({
+  worker = tabs.activeTab.attach({
     contentScriptFile: [self.data.url('jquery-3.1.0.min.js'),
                         self.data.url('scanResults.js')]
   });
+  setBnW();
 }

@@ -4,26 +4,47 @@ var SHIPMENT_STATUS = {
   NO: 'NO'
 }
 
+var blackAndWhite = false;
+
+self.port.on("BlackAndWhite", function(bnwStatus) { blackAndWhite = bnwStatus; });
+
 function setShipInfo($objDiv, status)
 {
-  switch(status)
+  if (blackAndWhite)
   {
-    case SHIPMENT_STATUS.YES:
-      $objDiv.css("border", "2px solid green");
-      break;
-    case SHIPMENT_STATUS.NO:
-      $objDiv.css("border", "2px solid red");
-      break;
-    case SHIPMENT_STATUS.UNDEFINED:
-    default:
-      $objDiv.css("border", "2px solid yellow");
+    switch(status)
+    {
+        case SHIPMENT_STATUS.YES:
+        $objDiv.css("border", "4px solid black");
+        break;
+        case SHIPMENT_STATUS.NO:
+        $objDiv.css("border", "4px dotted black");
+        break;
+        case SHIPMENT_STATUS.UNDEFINED:
+        default:
+        $objDiv.css("border", "4px dashed black");
+    }
+  } else
+  {
+    switch(status)
+    {
+        case SHIPMENT_STATUS.YES:
+        $objDiv.css("border", "2px solid green");
+        break;
+        case SHIPMENT_STATUS.NO:
+        $objDiv.css("border", "2px solid red");
+        break;
+        case SHIPMENT_STATUS.UNDEFINED:
+        default:
+        $objDiv.css("border", "2px solid yellow");
+    }
   }
 }
 
 function runScan()
 {
   //console.log("Running scan");
-  $("div.s-item-container").each(function(i) {
+  $(".s-item-container,.productContainer").each(function(i) {
     var $thisObject = $(this);
     
     if ($thisObject.prop("amazon-delivery-addon-checked") == true)
@@ -34,7 +55,8 @@ function runScan()
     
     $thisObject.prop("amazon-delivery-addon-checked", true); // don't check this multiple times
     
-    var lnk = $thisObject.find("a.s-access-detail-page").attr("href");
+    //var lnk = $thisObject.find("a.s-access-detail-page").attr("href");
+    var lnk = $thisObject.find("a").attr("href");
     
     if (lnk == null) return;
     //console.log(lnk);
@@ -48,29 +70,36 @@ function runScan()
       
     $.get(lnk, function(data) {
         
+        //data = parser.sanitize(data, parser.SanitizerAllowStyle);
+      
+        var parser = new DOMParser();
+        var htmlDoc = parser.parseFromString(data, "text/html");
+        //console.log(htmlDoc);
+        
         if (window.location.host.toLowerCase().indexOf("amazon.com") > -1)
         {
           // this is the .com website, it's a bit different than the international sites
-          var deliveryInfo = $(data).find("#fast-track-message");
-          if ($(deliveryInfo).text().indexOf("does not ship") > -1)
+          var deliveryInfo = htmlDoc.getElementById("fast-track-message");
+          
+          if (deliveryInfo.innerHTML.indexOf("does not ship") > -1)
           {
               //console.log("No delivery");
               setShipInfo($thisObject, SHIPMENT_STATUS.NO);
-          } else if ($(deliveryInfo).text().indexOf("ships to") > -1)
+          } else if (deliveryInfo.innerHTML.indexOf("ships to") > -1)
           {
               //console.log("Delivery ok");
               setShipInfo($thisObject, SHIPMENT_STATUS.YES);
           }
         } else
         {
-          var deliveryInfo = $(data).find("#ddmDeliveryMessage");
-          if (deliveryInfo.length == 0)
+          var deliveryInfo = htmlDoc.getElementById("ddmDeliveryMessage");
+          if (deliveryInfo == null)
           {
               //console.log("No deliveryInfo");
           }
           else
           {
-              var noDelivery = $(deliveryInfo).find(".a-color-error");
+              var noDelivery = deliveryInfo.getElementsByClassName("a-color-error");
               if (noDelivery.length > 0)
               {
                   //console.log("No delivery");
