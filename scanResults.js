@@ -4,9 +4,57 @@ var SHIPMENT_STATUS = {
   NO: 'NO'
 }
 
-var blackAndWhite = false;
+var isFF = (navigator.userAgent.search("Firefox") >= 0);
 
-self.port.on("BlackAndWhite", function(bnwStatus) { blackAndWhite = bnwStatus; });
+var blackAndWhite = undefined;
+
+function checkDisplayPreferenceFF()
+{
+  function setCurrentChoice(result) {
+    try {
+        blackAndWhite = result.amazon_delivercheck_useBW;
+    } catch(err)
+    {
+        blackAndWhite = false;
+    }
+        
+  }
+
+  function onError(error) {
+    //console.log(`Error: ${error}`);
+    blackandWhite = false;
+  }
+
+  var getting = browser.storage.local.get("amazon_delivercheck_useBW");
+  getting.then(setCurrentChoice, onError);
+}
+
+function checkDisplayPreferenceChrome() {
+  function setCurrentChoice(result) {
+    try {
+        blackAndWhite = result.amazon_delivercheck_useBW;
+    } catch(err)
+    {
+        blackAndWhite = false;
+    }
+        
+  }
+
+  var getting = chrome.storage.sync.get("amazon_delivercheck_useBW", setCurrentChoice);
+}
+
+function checkDisplayPreference() {
+    if (isFF)
+    {
+        console.log("Firefox");
+        checkDisplayPreferenceFF();
+    }
+    else
+    {
+        console.log("Chrome");
+        checkDisplayPreferenceChrome();
+    }
+}
 
 function setShipInfo($objDiv, status)
 {
@@ -40,6 +88,8 @@ function setShipInfo($objDiv, status)
     }
   }
 }
+
+checkDisplayPreference();
 
 function runScan()
 {
@@ -118,3 +168,4 @@ function runScan()
 }
 
 setInterval(runScan, 1000); // run the script every second to catch ajax changes
+//runScan()

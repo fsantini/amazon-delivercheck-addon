@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Amazon delivery check",
+  "version": "0.2.0",
+  "description": "This addon checks if Amazon delivers to your country, from the search page. Click the button when the result page is loaded: around each result a yellow border will appear.\nThe border will turn green when delivery is confirmed, turn red if delivery is impossible, and stay yellow if no information is available.\nFor color-blind people, a black and white scheme is available: solid means delivery possible, dotted means delivery impossible and dashed is undefined. You can select this black and white scheme in the preferences of the extension.",
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "browser_style": true
+  },
+  "content_scripts": [
+    {
+        "matches": [ "*://*/s/*", "*://*/search/*", "*://*/gp/aw/s/*" ],
+        "include_globs": [ "*://www.amazon.*/*" ],
+        "js": [ 
+            "jquery-3.1.0.min.js",
+            "scanResults.js"
+        ]
+    }],
+    "permissions": ["storage"],
+    "applications": {
+        "gecko": {
+            "id": "@amazon-delivercheck-addon"
+        }
+    }
+}
