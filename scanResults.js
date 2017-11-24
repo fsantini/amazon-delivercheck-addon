@@ -94,7 +94,7 @@ checkDisplayPreference();
 function runScan()
 {
   //console.log("Running scan");
-  $(".s-item-container,.productContainer").each(function(i) {
+  $(".s-item-container,.productContainer,.sx-table-item").each(function(i) {
     var $thisObject = $(this);
     
     if ($thisObject.prop("amazon-delivery-addon-checked") == true)
