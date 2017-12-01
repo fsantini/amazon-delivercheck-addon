@@ -7,12 +7,14 @@ function saveOptions(e) {
     if (isFF)
     {
         browser.storage.local.set({
-            amazon_delivercheck_useBW: document.querySelector("#useBW").checked
+            amazon_delivercheck_useBW: document.querySelector("#useBW").checked,
+            amazon_delivercheck_removeElements: document.querySelector("#removeElements").checked
         });
     } else
     {
         chrome.storage.sync.set({
-            amazon_delivercheck_useBW: document.querySelector("#useBW").checked
+            amazon_delivercheck_useBW: document.querySelector("#useBW").checked,
+            amazon_delivercheck_removeElements: document.querySelector("#removeElements").checked
         });
     }
         
@@ -21,20 +23,22 @@ function saveOptions(e) {
 function restoreOptions() {
   function setCurrentChoice(result) {
     document.querySelector("#useBW").checked = result.amazon_delivercheck_useBW;
+    document.querySelector("#removeElements").checked = result.amazon_delivercheck_removeElements;
   }
 
   function onError(error) {
     console.log(`Error: ${error}`);
     document.querySelector("#useBW").checked = false;
+    document.querySelector("#removeElements").checked = false;
   }
 
   if (isFF)
   {
-    var getting = browser.storage.local.get("amazon_delivercheck_useBW");
+    var getting = browser.storage.local.get(["amazon_delivercheck_useBW", "amazon_delivercheck_removeElements"]);
     getting.then(setCurrentChoice, onError);
   } else
   {
-      chrome.storage.sync.get("amazon_delivercheck_useBW", setCurrentChoice);
+      chrome.storage.sync.get(["amazon_delivercheck_useBW", "amazon_delivercheck_removeElements"], setCurrentChoice);
   }
 }
 

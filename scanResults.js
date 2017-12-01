@@ -7,6 +7,7 @@ var SHIPMENT_STATUS = {
 var isFF = (navigator.userAgent.search("Firefox") >= 0);
 
 var blackAndWhite = undefined;
+var removeElements = undefined;
 
 function checkDisplayPreferenceFF()
 {
@@ -29,6 +30,28 @@ function checkDisplayPreferenceFF()
   getting.then(setCurrentChoice, onError);
 }
 
+
+function checkRemovePreferenceFF()
+{
+  function setCurrentChoice(result) {
+    try {
+        removeElements = result.amazon_delivercheck_removeElements;
+    } catch(err)
+    {
+        removeElements = false;
+    }
+        
+  }
+
+  function onError(error) {
+    //console.log(`Error: ${error}`);
+    removeElements = false;
+  }
+
+  var getting = browser.storage.local.get("amazon_delivercheck_removeElements");
+  getting.then(setCurrentChoice, onError);
+}
+
 function checkDisplayPreferenceChrome() {
   function setCurrentChoice(result) {
     try {
@@ -43,21 +66,62 @@ function checkDisplayPreferenceChrome() {
   var getting = chrome.storage.sync.get("amazon_delivercheck_useBW", setCurrentChoice);
 }
 
+function checkRemovePreferenceChrome() {
+  function setCurrentChoice(result) {
+    try {
+        removeElements = result.amazon_delivercheck_removeElements;
+    } catch(err)
+    {
+        removeElements = false;
+    }
+        
+  }
+
+  var getting = chrome.storage.sync.get("amazon_delivercheck_removeElements", setCurrentChoice);
+}
+
 function checkDisplayPreference() {
     if (isFF)
     {
-        console.log("Firefox");
+        //console.log("Firefox");
         checkDisplayPreferenceFF();
     }
     else
     {
-        console.log("Chrome");
+        //console.log("Chrome");
         checkDisplayPreferenceChrome();
+    }
+}
+
+function checkRemovePreference() {
+    if (isFF)
+    {
+        //console.log("Firefox");
+        checkRemovePreferenceFF();
+    }
+    else
+    {
+        //console.log("Chrome");
+        checkRemovePreferenceChrome();
     }
 }
 
 function setShipInfo($objDiv, status)
 {
+  //console.log("Remove Elements: " + removeElements);
+  if (removeElements && status == SHIPMENT_STATUS.NO)
+  {
+      if ($objDiv.is("li"))
+      {
+          $objDiv.remove();
+      }
+      else
+      {
+          $objDiv.parent().remove();
+      }
+      return;
+  }
+    
   if (blackAndWhite)
   {
     switch(status)
@@ -90,6 +154,7 @@ function setShipInfo($objDiv, status)
 }
 
 checkDisplayPreference();
+checkRemovePreference();
 
 function runScan()
 {
