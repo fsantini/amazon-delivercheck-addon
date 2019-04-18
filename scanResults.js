@@ -159,7 +159,7 @@ checkRemovePreference();
 function runScan()
 {
   //console.log("Running scan");
-  $(".s-item-container,.productContainer,.sx-table-item").each(function(i) {
+  $(".s-item-container,.productContainer,.sx-table-item,.s-result-item").each(function(i) {
     var $thisObject = $(this);
     
     if ($thisObject.prop("amazon-delivery-addon-checked") == true)
@@ -168,10 +168,14 @@ function runScan()
       return;
     }
     
+    console.log("Result found");
+    
     $thisObject.prop("amazon-delivery-addon-checked", true); // don't check this multiple times
     
     //var lnk = $thisObject.find("a.s-access-detail-page").attr("href");
     var lnk = $thisObject.find("a").attr("href");
+    
+    console.log(lnk);
     
     if (lnk == null) return;
     //console.log(lnk);
