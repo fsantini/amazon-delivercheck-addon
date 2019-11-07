@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-        "matches": [ "*://*/s/*", "*://*/search/*", "*://*/gp/aw/s/*" ],
+        "matches": [ "*://*/*" ],
         "include_globs": [ "*://www.amazon.*/*" ],
         "js": [ 
             "jquery-3.1.0.min.js",
