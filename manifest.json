@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Amazon delivery check",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "This addon checks if Amazon delivers to your country, from the search page.",
   "icons": {
     "48": "icons/icon-48.png"
